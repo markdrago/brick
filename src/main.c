@@ -18,12 +18,11 @@
 
 #include "brick.h"
 
-static void setup_ui(HildonWindow *window) {
+static void setup_ui(GtkContainer *window) {
   GtkWidget *main_hbox;
   GtkListStore *name_list_store;
   GtkTreeIter iter;
   GtkCellRenderer *renderer;
-  /*  GtkTreeModel *model; */
   GtkWidget *view;
   GtkWidget *left_label;
 
@@ -58,18 +57,27 @@ static void setup_ui(HildonWindow *window) {
 
 int main(int argc, char *argv[])
 {
+#ifdef HAVE_HILDON
   HildonProgram *program;
   HildonWindow *window;
+#else
+  GtkWindow *window;
+#endif
 
   gtk_init(&argc, &argv);
-
-  program = HILDON_PROGRAM(hildon_program_get_instance());
   g_set_application_name("Brick");
 
+#ifdef HAVE_HILDON
+  program = HILDON_PROGRAM(hildon_program_get_instance());
   window = HILDON_WINDOW(hildon_window_new());
   hildon_program_add_window(program, window);
+#else
+  window = GTK_WINDOW(gtk_window_new(GTK_WINDOW_TOPLEVEL));
+  gtk_window_set_title(window, "Brick");
+  gtk_window_set_default_size(window, 400, 200);
+#endif
 
-  setup_ui(window);
+  setup_ui(GTK_CONTAINER(window));
 
   /* make close work */
   g_signal_connect(G_OBJECT(window), "delete_event",
