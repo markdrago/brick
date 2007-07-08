@@ -1,0 +1,28 @@
+#backup files
+.*~$
+
+#binary files
+.*\.o$
+^src/brick$
+
+#generated files
+intltool\-.*
+autom4te.*
+Makefile$
+Makefile.in$
+^aclocal.m4$
+^compile$
+^po/.*\.gmo$
+^config\..*
+^configure$
+^depcomp$
+^install-sh$
+^ltmain.sh$
+^missing$
+^mkinstalldirs$
+^po/Makefile.*
+^po/POTFILES$
+^po/stamp-it$
+^po/template.po$
+^src/.deps/brick-main.Po$
+^stamp-h1$

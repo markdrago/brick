@@ -17,6 +17,8 @@
  */
 
 #include "brick.h"
+#include <libintl.h>
+#include <locale.h>
 
 static void setup_ui(GtkContainer *window) {
   GtkWidget *main_hbox;
@@ -64,8 +66,14 @@ int main(int argc, char *argv[])
   GtkWindow *window;
 #endif
 
+  /* set up gettext */
+  setlocale(LC_ALL, "");
+  bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR);
+  bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
+  textdomain(GETTEXT_PACKAGE);
+
   gtk_init(&argc, &argv);
-  g_set_application_name("Brick");
+  g_set_application_name(_("Brick"));
 
 #ifdef HAVE_HILDON
   program = HILDON_PROGRAM(hildon_program_get_instance());
@@ -73,7 +81,7 @@ int main(int argc, char *argv[])
   hildon_program_add_window(program, window);
 #else
   window = GTK_WINDOW(gtk_window_new(GTK_WINDOW_TOPLEVEL));
-  gtk_window_set_title(window, "Brick");
+  /*  gtk_window_set_title(window, _("Brick")); */
   gtk_window_set_default_size(window, 400, 200);
 #endif
 

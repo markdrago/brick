@@ -7,3 +7,6 @@
 #endif
 
 #include <sqlite3.h>
+
+/* gettext macro */
+#define _(string) gettext(string)

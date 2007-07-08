@@ -23,6 +23,16 @@ PKG_CHECK_MODULES(GTK, gtk+-2.0)
 AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
 
+#setup gettext
+GETTEXT_PACKAGE=brick
+AC_SUBST(GETTEXT_PACKAGE)
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE", [Gettext Domain Name])
+ALL_LINGUAS="en_GB"
+AM_GLIB_GNU_GETTEXT
+localedir=/usr/share/locale
+AC_SUBST(localedir)
+AC_DEFINE_UNQUOTED(LOCALEDIR, "$localedir", [Local Directory])
+
 #Check if Hildon (Maemo) support has been disabled
 USE_HILDON="yes"
 AC_ARG_ENABLE(hildon,
@@ -68,5 +78,5 @@ AC_OUTPUT(
 	  src/Makefile \
 	  data/Makefile \
 	  po/POTFILES \
-	  po/Makefile
+	  po/Makefile.in
 )
