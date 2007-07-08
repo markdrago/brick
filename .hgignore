@@ -8,6 +8,7 @@
 #generated files
 intltool\-.*
 autom4te.*
+^src/.deps/.*$
 Makefile$
 Makefile.in$
 ^aclocal.m4$
@@ -24,5 +25,4 @@ Makefile.in$
 ^po/POTFILES$
 ^po/stamp-it$
 ^po/template.po$
-^src/.deps/brick-main.Po$
 ^stamp-h1$

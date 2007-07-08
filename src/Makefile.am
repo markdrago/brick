@@ -10,4 +10,6 @@ brick_CFLAGS= $(GLIB_CFLAGS) \
 	$(SQLITE3_CFLAGS) \
 	$(HILDON_CFLAGS)
 
-brick_SOURCES = main.c
+brick_SOURCES = main.c \
+	ui.c \
+	ui_gtk.c
