@@ -20,6 +20,7 @@ static void ui_gtk_get_name_container(GtkWidget **name_container)
   GtkWidget *adder_hbox;
   GtkWidget *adder_entry;
   GtkWidget *adder_button;
+  GtkTreeSelection *tree_selection;
 
   /* create the list store & tree view */
   name_list_store = gtk_list_store_new(3, G_TYPE_INT, G_TYPE_STRING, G_TYPE_INT);
@@ -41,6 +42,9 @@ static void ui_gtk_get_name_container(GtkWidget **name_container)
   renderer = gtk_cell_renderer_text_new();
   gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(view), -1, _("Score"),
 					      renderer, "text", 2, NULL);
+
+  tree_selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(view));
+  gtk_tree_selection_set_mode(tree_selection, GTK_SELECTION_NONE);
 
   /* marry the view to the model */
   gtk_tree_view_set_model(GTK_TREE_VIEW(view), GTK_TREE_MODEL(name_list_store));
@@ -70,9 +74,11 @@ static void ui_gtk_get_control_container(GtkWidget **control_container) {
   current_player = gtk_label_new(NULL);
   gtk_label_set_markup(GTK_LABEL(current_player),
 		       "<span size=\"large\" weight=\"bold\">Mark</span>");
-  gtk_label_set_justify(GTK_LABEL(current_player), GTK_JUSTIFY_LEFT);
+  gtk_misc_set_alignment(GTK_MISC(current_player), 0.1, 1.0);
+  gtk_widget_set_size_request(current_player, -1, 30);
+
   label2 = gtk_label_new("Label2");
-  *control_container = gtk_vbox_new(TRUE, 0);
+  *control_container = gtk_vbox_new(FALSE, 0);
 
   gtk_box_pack_start(GTK_BOX(*control_container), current_player, FALSE, FALSE, 0);
   gtk_box_pack_start(GTK_BOX(*control_container), label2, TRUE, TRUE, 0);
@@ -82,14 +88,17 @@ static void ui_gtk_get_main_window(GtkContainer *window) {
   GtkWidget *main_hbox;
   GtkWidget *control_container;
   GtkWidget *list_container;
+  GtkWidget *v_separator;
 
   main_hbox = gtk_hbox_new(FALSE, 0);
 
   ui_gtk_get_name_container(&list_container);
   ui_gtk_get_control_container(&control_container);
+  v_separator = gtk_vseparator_new();
 
   /* pack widgets in to the hbox */
   gtk_box_pack_start(GTK_BOX(main_hbox), control_container, TRUE, TRUE, 2);
+  gtk_box_pack_start(GTK_BOX(main_hbox), v_separator, FALSE, FALSE, 2);
   gtk_box_pack_start(GTK_BOX(main_hbox), list_container, FALSE, FALSE, 2);
 
   gtk_container_add(GTK_CONTAINER(window), main_hbox);
