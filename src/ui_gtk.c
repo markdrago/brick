@@ -69,19 +69,49 @@ static void ui_gtk_get_name_container(GtkWidget **name_container)
 }
 
 static void ui_gtk_get_control_container(GtkWidget **control_container) {
-  GtkWidget *current_player, *label2;
+  GtkWidget *current_player;
+  GtkWidget *control_hbox, *buttons_vbox, *special_vbox;
+  GtkWidget *score5, *score3, *score1, *score0;
+  GtkWidget *air5, *air3, *air1, *brb5, *brb3;
 
+  /* set up current player name label */
   current_player = gtk_label_new(NULL);
   gtk_label_set_markup(GTK_LABEL(current_player),
 		       "<span size=\"large\" weight=\"bold\">Mark</span>");
   gtk_misc_set_alignment(GTK_MISC(current_player), 0.1, 1.0);
   gtk_widget_set_size_request(current_player, -1, 30);
 
-  label2 = gtk_label_new("Label2");
-  *control_container = gtk_vbox_new(FALSE, 0);
+  /* set up scoring buttons */
+  score5 = gtk_button_new_with_label(_("Score 5"));
+  score3 = gtk_button_new_with_label(_("Score 3"));
+  score1 = gtk_button_new_with_label(_("Score 1"));
+  score0 = gtk_button_new_with_label(_("Missed All"));
+  buttons_vbox = gtk_vbox_new(TRUE, 6);
+  gtk_box_pack_start(GTK_BOX(buttons_vbox), score5, TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(buttons_vbox), score3, TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(buttons_vbox), score1, TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(buttons_vbox), score0, TRUE, TRUE, 0);
 
+  /* set up special event buttons */
+  air5 = gtk_toggle_button_new_with_label(_("Air 5"));
+  air3 = gtk_toggle_button_new_with_label(_("Air 3"));
+  air1 = gtk_toggle_button_new_with_label(_("Air 1"));
+  brb5 = gtk_toggle_button_new_with_label(_("BRB 5"));
+  brb3 = gtk_toggle_button_new_with_label(_("BRB 3"));
+  special_vbox = gtk_vbox_new(TRUE, 6);
+  gtk_box_pack_start(GTK_BOX(special_vbox), air5, TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(special_vbox), air3, TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(special_vbox), air1, TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(special_vbox), brb5, TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(special_vbox), brb3, TRUE, TRUE, 0);
+
+  control_hbox = gtk_hbox_new(TRUE, 6);
+  gtk_box_pack_start(GTK_BOX(control_hbox), buttons_vbox, TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(control_hbox), special_vbox, TRUE, TRUE, 0);
+
+  *control_container = gtk_vbox_new(FALSE, 0);
   gtk_box_pack_start(GTK_BOX(*control_container), current_player, FALSE, FALSE, 0);
-  gtk_box_pack_start(GTK_BOX(*control_container), label2, TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(*control_container), control_hbox, TRUE, TRUE, 0);
 }
 
 static void ui_gtk_get_main_window(GtkContainer *window) {
