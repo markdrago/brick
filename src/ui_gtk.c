@@ -31,6 +31,10 @@ static void ui_gtk_get_name_container(GtkWidget **name_container)
   gtk_list_store_set(name_list_store, &iter, 0, 1, 1, "Mark", 2, 10, -1);
   gtk_list_store_append(name_list_store, &iter);
   gtk_list_store_set(name_list_store, &iter, 0, 2, 1, "Byron", 2, 8, -1);
+  gtk_list_store_append(name_list_store, &iter);
+  gtk_list_store_set(name_list_store, &iter, 0, 3, 1, "Jon", 2, 18, -1);
+  gtk_list_store_append(name_list_store, &iter);
+  gtk_list_store_set(name_list_store, &iter, 0, 4, 1, "Adam", 2, 13, -1);
 
   /* tell the tree view how to render the columns */
   renderer = gtk_cell_renderer_text_new();
@@ -74,6 +78,7 @@ static void ui_gtk_get_control_container(GtkWidget **control_container) {
   GtkWidget *air5, *air3, *air1, *brb5, *brb3;
   GtkWidget *current_player, *score_label, *airball_label, *brb_label;
   GtkWidget *airball_align, *brb_align, *air_button_box, *brb_button_box;
+  GtkWidget *skip, *skip_separator, *skip_box;
 
   /* set up current player name label */
   current_player = gtk_label_new(NULL);
@@ -131,11 +136,17 @@ static void ui_gtk_get_control_container(GtkWidget **control_container) {
   score3 = gtk_button_new_with_label(_("3"));
   score1 = gtk_button_new_with_label(_("1"));
   score0 = gtk_button_new_with_label(_("None"));
+  skip_separator = gtk_vseparator_new();
+  skip = gtk_button_new_with_label(_("Skip"));
+  skip_box = gtk_hbox_new(FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(skip_box), skip_separator, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(skip_box), skip, TRUE, TRUE, 6);
   score_box = gtk_hbox_new(TRUE, 6);
   gtk_box_pack_start(GTK_BOX(score_box), score5, TRUE, TRUE, 0);
   gtk_box_pack_start(GTK_BOX(score_box), score3, TRUE, TRUE, 0);
   gtk_box_pack_start(GTK_BOX(score_box), score1, TRUE, TRUE, 0);
   gtk_box_pack_start(GTK_BOX(score_box), score0, TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(score_box), skip_box, TRUE, TRUE, 0);
 
   attr_box = gtk_hbox_new(TRUE, 6);
   gtk_box_pack_start(GTK_BOX(attr_box), airball_box, TRUE, TRUE, 0);
