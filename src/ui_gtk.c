@@ -69,49 +69,84 @@ static void ui_gtk_get_name_container(GtkWidget **name_container)
 }
 
 static void ui_gtk_get_control_container(GtkWidget **control_container) {
-  GtkWidget *current_player;
-  GtkWidget *control_hbox, *buttons_vbox, *special_vbox;
+  GtkWidget *score_box, *airball_box, *brb_box, *attr_box;
   GtkWidget *score5, *score3, *score1, *score0;
   GtkWidget *air5, *air3, *air1, *brb5, *brb3;
+  GtkWidget *current_player, *score_label, *airball_label, *brb_label;
+  GtkWidget *airball_align, *brb_align, *air_button_box, *brb_button_box;
 
   /* set up current player name label */
   current_player = gtk_label_new(NULL);
   gtk_label_set_markup(GTK_LABEL(current_player),
 		       "<span size=\"large\" weight=\"bold\">Mark</span>");
-  gtk_misc_set_alignment(GTK_MISC(current_player), 0.1, 1.0);
+  gtk_misc_set_alignment(GTK_MISC(current_player), 0, 1.0);
   gtk_widget_set_size_request(current_player, -1, 30);
 
+  /* create labels */
+  score_label = gtk_label_new(NULL);
+  gtk_label_set_markup(GTK_LABEL(score_label),
+		       "<span weight=\"bold\">Score</span>");
+  airball_label = gtk_label_new(NULL);
+  gtk_label_set_markup(GTK_LABEL(airball_label),
+		       "<span weight=\"bold\">Airball</span>");
+  gtk_misc_set_alignment(GTK_MISC(airball_label), 0.1, 1.0);
+  brb_label = gtk_label_new(NULL);
+  gtk_label_set_markup(GTK_LABEL(brb_label),
+		       "<span weight=\"bold\">Bad Rebound</span>");
+  gtk_misc_set_alignment(GTK_MISC(brb_label), 0.1, 1.0);
+
+  /* set up airball buttons */
+  air5 = gtk_check_button_new_with_label(_("5"));
+  air3 = gtk_check_button_new_with_label(_("3"));
+  air1 = gtk_check_button_new_with_label(_("1"));
+  air_button_box = gtk_vbox_new(FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(air_button_box), air5, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(air_button_box), air3, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(air_button_box), air1, FALSE, FALSE, 0);
+
+  /* align the airball button box */
+  airball_align = gtk_alignment_new(0.1, 0.5, 0, 0);
+  gtk_container_add(GTK_CONTAINER(airball_align), air_button_box);
+
+  airball_box = gtk_vbox_new(FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(airball_box), airball_label, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(airball_box), airball_align, FALSE, FALSE, 0);
+
+  /* set up bad rebound buttons */
+  brb5 = gtk_check_button_new_with_label(_("5"));
+  brb3 = gtk_check_button_new_with_label(_("3"));
+  brb_button_box = gtk_vbox_new(FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(brb_button_box), brb5, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(brb_button_box), brb3, FALSE, FALSE, 0);
+  
+  brb_align = gtk_alignment_new(0.1, 0.5, 0, 0);
+  gtk_container_add(GTK_CONTAINER(brb_align), brb_button_box);
+
+  brb_box = gtk_vbox_new(FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(brb_box), brb_label, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(brb_box), brb_align, FALSE, FALSE, 0);
+
   /* set up scoring buttons */
-  score5 = gtk_button_new_with_label(_("Score 5"));
-  score3 = gtk_button_new_with_label(_("Score 3"));
-  score1 = gtk_button_new_with_label(_("Score 1"));
-  score0 = gtk_button_new_with_label(_("Missed All"));
-  buttons_vbox = gtk_vbox_new(TRUE, 6);
-  gtk_box_pack_start(GTK_BOX(buttons_vbox), score5, TRUE, TRUE, 0);
-  gtk_box_pack_start(GTK_BOX(buttons_vbox), score3, TRUE, TRUE, 0);
-  gtk_box_pack_start(GTK_BOX(buttons_vbox), score1, TRUE, TRUE, 0);
-  gtk_box_pack_start(GTK_BOX(buttons_vbox), score0, TRUE, TRUE, 0);
+  score5 = gtk_button_new_with_label(_("5"));
+  score3 = gtk_button_new_with_label(_("3"));
+  score1 = gtk_button_new_with_label(_("1"));
+  score0 = gtk_button_new_with_label(_("None"));
+  score_box = gtk_hbox_new(TRUE, 6);
+  gtk_box_pack_start(GTK_BOX(score_box), score5, TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(score_box), score3, TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(score_box), score1, TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(score_box), score0, TRUE, TRUE, 0);
 
-  /* set up special event buttons */
-  air5 = gtk_toggle_button_new_with_label(_("Air 5"));
-  air3 = gtk_toggle_button_new_with_label(_("Air 3"));
-  air1 = gtk_toggle_button_new_with_label(_("Air 1"));
-  brb5 = gtk_toggle_button_new_with_label(_("BRB 5"));
-  brb3 = gtk_toggle_button_new_with_label(_("BRB 3"));
-  special_vbox = gtk_vbox_new(TRUE, 6);
-  gtk_box_pack_start(GTK_BOX(special_vbox), air5, TRUE, TRUE, 0);
-  gtk_box_pack_start(GTK_BOX(special_vbox), air3, TRUE, TRUE, 0);
-  gtk_box_pack_start(GTK_BOX(special_vbox), air1, TRUE, TRUE, 0);
-  gtk_box_pack_start(GTK_BOX(special_vbox), brb5, TRUE, TRUE, 0);
-  gtk_box_pack_start(GTK_BOX(special_vbox), brb3, TRUE, TRUE, 0);
+  attr_box = gtk_hbox_new(TRUE, 6);
+  gtk_box_pack_start(GTK_BOX(attr_box), airball_box, TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(attr_box), brb_box, TRUE, TRUE, 0);
 
-  control_hbox = gtk_hbox_new(TRUE, 6);
-  gtk_box_pack_start(GTK_BOX(control_hbox), buttons_vbox, TRUE, TRUE, 0);
-  gtk_box_pack_start(GTK_BOX(control_hbox), special_vbox, TRUE, TRUE, 0);
-
+  /* pack everything in to a vbox */
   *control_container = gtk_vbox_new(FALSE, 0);
   gtk_box_pack_start(GTK_BOX(*control_container), current_player, FALSE, FALSE, 0);
-  gtk_box_pack_start(GTK_BOX(*control_container), control_hbox, TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(*control_container), attr_box, TRUE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(*control_container), score_label, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(*control_container), score_box, TRUE, FALSE, 0);
 }
 
 static void ui_gtk_get_main_window(GtkContainer *window) {
