@@ -10,31 +10,37 @@
 /* gettext macro */
 #define _(string) gettext(string)
 
+/* widgets that are accessed in callbacks */
+GtkListStore *name_list_store;
+GtkWidget *adder_entry;
+
+static void add_name_to_list(GtkWidget *button, gpointer data)
+{
+  GtkTreeIter iter;
+  const gchar *name;
+
+  /* get the text from the adder entry */
+  name = gtk_entry_get_text(GTK_ENTRY(adder_entry));
+
+  gtk_list_store_append(name_list_store, &iter);
+  gtk_list_store_set(name_list_store, &iter, 0, 1, 1, name, 2, 10, -1);
+
+  /* clear out the adder entry */
+  gtk_entry_set_text(GTK_ENTRY(adder_entry), "");
+}
+
 static void ui_gtk_get_name_container(GtkWidget **name_container)
 {
-  GtkListStore *name_list_store;
-  GtkTreeIter iter;
   GtkCellRenderer *renderer;
   GtkWidget *view;
   GtkTreeViewColumn *tree_column;
   GtkWidget *adder_hbox;
-  GtkWidget *adder_entry;
   GtkWidget *adder_button;
   GtkTreeSelection *tree_selection;
 
   /* create the list store & tree view */
   name_list_store = gtk_list_store_new(3, G_TYPE_INT, G_TYPE_STRING, G_TYPE_INT);
   view = gtk_tree_view_new();
-
-  /* create some fake data */
-  gtk_list_store_append(name_list_store, &iter);
-  gtk_list_store_set(name_list_store, &iter, 0, 1, 1, "Mark", 2, 10, -1);
-  gtk_list_store_append(name_list_store, &iter);
-  gtk_list_store_set(name_list_store, &iter, 0, 2, 1, "Byron", 2, 8, -1);
-  gtk_list_store_append(name_list_store, &iter);
-  gtk_list_store_set(name_list_store, &iter, 0, 3, 1, "Jon", 2, 18, -1);
-  gtk_list_store_append(name_list_store, &iter);
-  gtk_list_store_set(name_list_store, &iter, 0, 4, 1, "Adam", 2, 13, -1);
 
   /* tell the tree view how to render the columns */
   renderer = gtk_cell_renderer_text_new();
@@ -61,6 +67,9 @@ static void ui_gtk_get_name_container(GtkWidget **name_container)
   adder_entry = gtk_entry_new();
   adder_button = gtk_button_new_from_stock(GTK_STOCK_ADD);
   gtk_widget_set_size_request(adder_entry, 100, -1);
+
+  /* add signal to adder button */
+  g_signal_connect(adder_button, "clicked", G_CALLBACK(add_name_to_list), NULL);
   
   /* pack entry and button in to the hbox */
   gtk_box_pack_start(GTK_BOX(adder_hbox), adder_entry, TRUE, TRUE, 0);
