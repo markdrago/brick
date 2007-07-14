@@ -1,4 +1,7 @@
 #include "brick.h"
+#include "control.h"
+#include "model.h"
+
 #include <gtk/gtk.h>
 #include <libintl.h>
 #include <locale.h>
@@ -14,16 +17,33 @@
 GtkListStore *name_list_store;
 GtkWidget *adder_entry;
 
-static void add_name_to_list(GtkWidget *button, gpointer data)
-{
+static void ui_gtk_update_scores() {
   GtkTreeIter iter;
+  GList *names = model_get_player_names();
+
+  /* clear out the existing scores from the display */
+  gtk_list_store_clear(name_list_store);
+
+  /* repopulate the scores */
+  while (names != NULL) {
+    gtk_list_store_append(name_list_store, &iter);
+    gtk_list_store_set(name_list_store, &iter, 0, 1, 1, names->data, 2, 10, -1);
+    names = g_list_next(names);
+  }
+}
+
+static void ui_gtk_add_player(GtkWidget *button, gpointer data)
+{
   const gchar *name;
 
   /* get the text from the adder entry */
   name = gtk_entry_get_text(GTK_ENTRY(adder_entry));
 
-  gtk_list_store_append(name_list_store, &iter);
-  gtk_list_store_set(name_list_store, &iter, 0, 1, 1, name, 2, 10, -1);
+  /* pass this name on to the controller */
+  control_add_player(name);
+
+  /* update the list */
+  ui_gtk_update_scores();
 
   /* clear out the adder entry */
   gtk_entry_set_text(GTK_ENTRY(adder_entry), "");
@@ -69,7 +89,7 @@ static void ui_gtk_get_name_container(GtkWidget **name_container)
   gtk_widget_set_size_request(adder_entry, 100, -1);
 
   /* add signal to adder button */
-  g_signal_connect(adder_button, "clicked", G_CALLBACK(add_name_to_list), NULL);
+  g_signal_connect(adder_button, "clicked", G_CALLBACK(ui_gtk_add_player), NULL);
   
   /* pack entry and button in to the hbox */
   gtk_box_pack_start(GTK_BOX(adder_hbox), adder_entry, TRUE, TRUE, 0);
