@@ -23,6 +23,8 @@ struct round {
   gboolean air_5;
   gboolean air_3;
   gboolean air_1;
+  gboolean imiss_5;
+  gboolean imiss_3;
   gboolean brb_5;
   gboolean brb_3;
 };
@@ -54,14 +56,14 @@ guint model_get_number_of_players() {
 }
 
 static gboolean add_player_to_game(struct player *player_to_add) {
-  struct player player1;
+  struct player p;
   gint i, num_players;
 
   num_players = model_get_number_of_players();
 
   for (i = 0; i < num_players; i++) {
-    player1 = g_array_index(maingame->players, struct player, i);
-    if (! strcmp(player1.name, player_to_add->name)) {
+    p = g_array_index(maingame->players, struct player, i);
+    if (! strcmp(p.name, player_to_add->name)) {
       return FALSE;
     }
   }
@@ -90,22 +92,22 @@ gboolean model_add_player(const gchar *name) {
 }
 
 gboolean model_get_player_name(gchar **name, const guint player_num) {
-  struct player player1;
+  struct player p;
   
   *name = NULL;
-  player1 = g_array_index(maingame->players, struct player, player_num);
+  p = g_array_index(maingame->players, struct player, player_num);
 
-  *name = g_strdup(player1.name);
+  *name = g_strdup(p.name);
   return TRUE;
 }
 
 gboolean model_get_player_score(gint *score, const guint player_num) {
-  struct player player1;
+  struct player p;
 
   *score = 0;
-  player1 = g_array_index(maingame->players, struct player, player_num);
+  p = g_array_index(maingame->players, struct player, player_num);
 
-  *score = player1.score;
+  *score = p.score;
   return TRUE;
 }
 

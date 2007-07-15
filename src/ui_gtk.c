@@ -133,12 +133,14 @@ static void get_name_container(GtkWidget **name_container)
 }
 
 static void get_control_container(GtkWidget **control_container) {
-  GtkWidget *score_box, *airball_box, *brb_box, *attr_box;
+  GtkWidget *score_box, *airball_box, *brb_box, *imiss_box, *attr_box;
   GtkWidget *score5, *score3, *score1, *score0;
-  GtkWidget *air5, *air3, *air1, *brb5, *brb3;
-  GtkWidget *current_player, *score_label, *airball_label, *brb_label;
-  GtkWidget *airball_align, *brb_align, *air_button_box, *brb_button_box;
+  GtkWidget *air5, *air3, *air1, *brb5, *brb3, *imiss5, *imiss3;
+  GtkWidget *current_player, *score_label, *airball_label, *brb_label, *imiss_label;
+  GtkWidget *airball_align, *brb_align, *imiss_align;
+  GtkWidget *air_button_box, *brb_button_box, *imiss_button_box;
   GtkWidget *skip, *skip_separator, *skip_box;
+  gchar *label_text;
 
   /* set up current player name label */
   current_player = gtk_label_new(NULL);
@@ -149,16 +151,26 @@ static void get_control_container(GtkWidget **control_container) {
 
   /* create labels */
   score_label = gtk_label_new(NULL);
-  gtk_label_set_markup(GTK_LABEL(score_label),
-		       "<span weight=\"bold\">Score</span>");
+  label_text = g_strdup_printf("<span weight=\"bold\">%s</span>", _("Score"));
+  gtk_label_set_markup(GTK_LABEL(score_label), label_text);
+  g_free(label_text);
+
   airball_label = gtk_label_new(NULL);
-  gtk_label_set_markup(GTK_LABEL(airball_label),
-		       "<span weight=\"bold\">Airball</span>");
+  label_text = g_strdup_printf("<span weight=\"bold\">%s</span>", _("Airball"));
+  gtk_label_set_markup(GTK_LABEL(airball_label), label_text);
   gtk_misc_set_alignment(GTK_MISC(airball_label), 0.1, 1.0);
+  g_free(label_text);
+		       
   brb_label = gtk_label_new(NULL);
-  gtk_label_set_markup(GTK_LABEL(brb_label),
-		       "<span weight=\"bold\">Bad Rebound</span>");
+  label_text = g_strdup_printf("<span weight=\"bold\">%s</span>", _("Bad Rebound"));
+  gtk_label_set_markup(GTK_LABEL(brb_label), label_text);
   gtk_misc_set_alignment(GTK_MISC(brb_label), 0.1, 1.0);
+  g_free(label_text);
+
+  imiss_label = gtk_label_new(NULL);
+  label_text = g_strdup_printf("<span weight=\"bold\">%s</span>", _("Planned Miss"));
+  gtk_label_set_markup(GTK_LABEL(imiss_label), label_text);
+  gtk_misc_set_alignment(GTK_MISC(imiss_label), 0.1, 1.0);
 
   /* set up airball buttons */
   air5 = gtk_check_button_new_with_label(_("5"));
@@ -191,6 +203,20 @@ static void get_control_container(GtkWidget **control_container) {
   gtk_box_pack_start(GTK_BOX(brb_box), brb_label, FALSE, FALSE, 0);
   gtk_box_pack_start(GTK_BOX(brb_box), brb_align, FALSE, FALSE, 0);
 
+  /* set up planned miss buttons */
+  imiss5 = gtk_check_button_new_with_label(_("5"));
+  imiss3 = gtk_check_button_new_with_label(_("3"));
+  imiss_button_box = gtk_vbox_new(FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(imiss_button_box), imiss5, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(imiss_button_box), imiss3, FALSE, FALSE, 0);
+  
+  imiss_align = gtk_alignment_new(0.1, 0.5, 0, 0);
+  gtk_container_add(GTK_CONTAINER(imiss_align), imiss_button_box);
+
+  imiss_box = gtk_vbox_new(FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(imiss_box), imiss_label, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(imiss_box), imiss_align, FALSE, FALSE, 0);
+
   /* set up scoring buttons */
   score5 = gtk_button_new_with_label(_("5"));
   score3 = gtk_button_new_with_label(_("3"));
@@ -208,9 +234,10 @@ static void get_control_container(GtkWidget **control_container) {
   gtk_box_pack_start(GTK_BOX(score_box), score0, TRUE, TRUE, 0);
   gtk_box_pack_start(GTK_BOX(score_box), skip_box, TRUE, TRUE, 0);
 
-  attr_box = gtk_hbox_new(TRUE, 6);
+  attr_box = gtk_hbox_new(FALSE, 6);
   gtk_box_pack_start(GTK_BOX(attr_box), airball_box, TRUE, TRUE, 0);
   gtk_box_pack_start(GTK_BOX(attr_box), brb_box, TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(attr_box), imiss_box, TRUE, TRUE, 0);
 
   /* pack everything in to a vbox */
   *control_container = gtk_vbox_new(FALSE, 0);
