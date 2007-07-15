@@ -21,6 +21,7 @@
 
 int main(int argc, char *argv[])
 {
+  model_init();
   ui_init(argc, argv);
   ui_main_loop();
 

@@ -1,3 +1,21 @@
+/*
+ * Brick - A 'Twenty-One' Score Tracker
+ * Copyright (C) 2007 Mark Drago
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "brick.h"
 
 struct round {
@@ -11,25 +29,16 @@ struct round {
 
 struct player {
   gchar *name;
-  GList *rounds;
+  gint score;
+  GArray *rounds;
 };
 
 struct game {
-  GList *players;
+  GArray *players;
 };
 
 /* global game structure */
-static struct game maingame;
-
-/* this function is used by GList to compare elements */
-static gint compare_player_names(gconstpointer a, gconstpointer b) {
-  struct player *playera, *playerb;
-
-  playera = (struct player*)a;
-  playerb = (struct player*)b;
-
-  return strcmp(playera->name, playerb->name);
-}
+static struct game *maingame;
 
 static void free_player(struct player *player_to_free) {
   if (player_to_free != NULL) {
@@ -40,14 +49,24 @@ static void free_player(struct player *player_to_free) {
   }
 }
 
+guint model_get_number_of_players() {
+  return maingame->players->len;
+}
+
 static gboolean add_player_to_game(struct player *player_to_add) {
-  if (g_list_find_custom(maingame.players, player_to_add,
-			 compare_player_names) != NULL) {
-    free_player(player_to_add);
-    return FALSE;
+  struct player player1;
+  gint i, num_players;
+
+  num_players = model_get_number_of_players();
+
+  for (i = 0; i < num_players; i++) {
+    player1 = g_array_index(maingame->players, struct player, i);
+    if (! strcmp(player1.name, player_to_add->name)) {
+      return FALSE;
+    }
   }
 
-  maingame.players = g_list_append(maingame.players, player_to_add);
+  g_array_append_val(maingame->players, *player_to_add);
   return TRUE;
 }
 
@@ -56,6 +75,9 @@ static struct player *create_player(const gchar *name) {
 
   new_player = g_new(struct player, 1);
   new_player->name = g_strdup(name);
+
+  new_player->score = 0;
+  new_player->rounds = NULL;
 
   return new_player;
 }
@@ -67,18 +89,27 @@ gboolean model_add_player(const gchar *name) {
   return add_player_to_game(new_player);
 }
 
-GList *model_get_player_names() {
-  GList *names = NULL;
-  GList *players;
-  struct player *player1;
+gboolean model_get_player_name(gchar **name, const guint player_num) {
+  struct player player1;
   
-  players = maingame.players;
+  *name = NULL;
+  player1 = g_array_index(maingame->players, struct player, player_num);
 
-  while (players != NULL) {
-    player1 = (struct player*)players->data;
-    names = g_list_append(names, player1->name);
-    players = g_list_next(players);
-  }
+  *name = g_strdup(player1.name);
+  return TRUE;
+}
 
-  return g_list_first(names);
+gboolean model_get_player_score(gint *score, const guint player_num) {
+  struct player player1;
+
+  *score = 0;
+  player1 = g_array_index(maingame->players, struct player, player_num);
+
+  *score = player1.score;
+  return TRUE;
+}
+
+gboolean model_init() {
+  maingame = g_new(struct game, 1);
+  maingame->players = g_array_new(TRUE, FALSE, sizeof(struct player));
 }

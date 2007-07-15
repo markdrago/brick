@@ -1,3 +1,21 @@
+/*
+ * Brick - A 'Twenty-One' Score Tracker
+ * Copyright (C) 2007 Mark Drago
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "brick.h"
 #include "control.h"
 #include "model.h"
@@ -17,22 +35,34 @@
 GtkListStore *name_list_store;
 GtkWidget *adder_entry;
 
-static void ui_gtk_update_scores() {
+static void update_score_display() {
   GtkTreeIter iter;
-  GList *names = model_get_player_names();
+  gint i, score, num_players;
+  gchar *name;
 
   /* clear out the existing scores from the display */
   gtk_list_store_clear(name_list_store);
 
   /* repopulate the scores */
-  while (names != NULL) {
+  num_players = model_get_number_of_players();
+  for (i = 0; i < num_players; i++) {
+
+    /* get name of player */
+    if (! model_get_player_name(&name, i)) {
+      continue;
+    }
+
+    /* get current score for player */
+    if (! model_get_player_score(&score, i)) {
+      continue;
+    }
+
     gtk_list_store_append(name_list_store, &iter);
-    gtk_list_store_set(name_list_store, &iter, 0, 1, 1, names->data, 2, 10, -1);
-    names = g_list_next(names);
+    gtk_list_store_set(name_list_store, &iter, 0, (i+1), 1, name, 2, score, -1);
   }
 }
 
-static void ui_gtk_add_player(GtkWidget *button, gpointer data)
+static void add_player(GtkWidget *button, gpointer data)
 {
   const gchar *name;
 
@@ -43,13 +73,13 @@ static void ui_gtk_add_player(GtkWidget *button, gpointer data)
   control_add_player(name);
 
   /* update the list */
-  ui_gtk_update_scores();
+  update_score_display();
 
   /* clear out the adder entry */
   gtk_entry_set_text(GTK_ENTRY(adder_entry), "");
 }
 
-static void ui_gtk_get_name_container(GtkWidget **name_container)
+static void get_name_container(GtkWidget **name_container)
 {
   GtkCellRenderer *renderer;
   GtkWidget *view;
@@ -88,8 +118,9 @@ static void ui_gtk_get_name_container(GtkWidget **name_container)
   adder_button = gtk_button_new_from_stock(GTK_STOCK_ADD);
   gtk_widget_set_size_request(adder_entry, 100, -1);
 
-  /* add signal to adder button */
-  g_signal_connect(adder_button, "clicked", G_CALLBACK(ui_gtk_add_player), NULL);
+  /* add signal to adder button and entry */
+  g_signal_connect(adder_button, "clicked", G_CALLBACK(add_player), NULL);
+  g_signal_connect(adder_entry, "activate", G_CALLBACK(add_player), NULL);
   
   /* pack entry and button in to the hbox */
   gtk_box_pack_start(GTK_BOX(adder_hbox), adder_entry, TRUE, TRUE, 0);
@@ -101,7 +132,7 @@ static void ui_gtk_get_name_container(GtkWidget **name_container)
   gtk_box_pack_start(GTK_BOX(*name_container), adder_hbox, FALSE, FALSE, 0);
 }
 
-static void ui_gtk_get_control_container(GtkWidget **control_container) {
+static void get_control_container(GtkWidget **control_container) {
   GtkWidget *score_box, *airball_box, *brb_box, *attr_box;
   GtkWidget *score5, *score3, *score1, *score0;
   GtkWidget *air5, *air3, *air1, *brb5, *brb3;
@@ -189,7 +220,7 @@ static void ui_gtk_get_control_container(GtkWidget **control_container) {
   gtk_box_pack_start(GTK_BOX(*control_container), score_box, TRUE, FALSE, 0);
 }
 
-static void ui_gtk_get_main_window(GtkContainer *window) {
+static void get_main_window(GtkContainer *window) {
   GtkWidget *main_hbox;
   GtkWidget *control_container;
   GtkWidget *list_container;
@@ -197,8 +228,8 @@ static void ui_gtk_get_main_window(GtkContainer *window) {
 
   main_hbox = gtk_hbox_new(FALSE, 0);
 
-  ui_gtk_get_name_container(&list_container);
-  ui_gtk_get_control_container(&control_container);
+  get_name_container(&list_container);
+  get_control_container(&control_container);
   v_separator = gtk_vseparator_new();
 
   /* pack widgets in to the hbox */
@@ -232,11 +263,10 @@ void ui_gtk_init(int argc, char *argv[]) {
   hildon_program_add_window(program, window);
 #else
   window = GTK_WINDOW(gtk_window_new(GTK_WINDOW_TOPLEVEL));
-  /*  gtk_window_set_title(window, _("Brick")); */
   gtk_window_set_default_size(window, 400, 200);
 #endif
 
-  ui_gtk_get_main_window(GTK_CONTAINER(window));
+  get_main_window(GTK_CONTAINER(window));
 
   /* make close work */
   g_signal_connect(G_OBJECT(window), "delete_event",

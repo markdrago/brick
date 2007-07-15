@@ -11,7 +11,6 @@ brick_CFLAGS= $(GLIB_CFLAGS) \
 	$(HILDON_CFLAGS)
 
 brick_SOURCES = main.c \
-	ui.c \
 	ui_gtk.c \
 	control.c \
 	model.c
