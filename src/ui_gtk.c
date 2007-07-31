@@ -33,15 +33,34 @@
 
 /* widgets that are accessed in callbacks */
 GtkListStore *name_list_store;
-GtkWidget *adder_entry;
+GtkWidget *adder_entry, *current_player;
+GtkWidget *score5, *score3, *score1, *score0, *skip;
+GtkWidget *air5, *air3, *air1, *brb5, *brb3, *imiss5, *imiss3;
 
 static void update_score_display() {
   GtkTreeIter iter;
   gint i, score, num_players;
-  gchar *name;
+  guint current;
+  gchar *name, *name_markup;
+
+  /* uncheck the check boxes */
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(air5), FALSE);
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(air3), FALSE);
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(air1), FALSE);
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(imiss5), FALSE);
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(imiss3), FALSE);
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(brb5), FALSE);
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(brb3), FALSE);
 
   /* clear out the existing scores from the display */
   gtk_list_store_clear(name_list_store);
+
+  /* select the current player - put their name on top */
+  current = control_get_current_player_num();
+  model_get_player_name(&name, current);
+  name_markup = g_strdup_printf("<span size=\"large\" weight=\"bold\">%s</span>", name);
+  gtk_label_set_markup(GTK_LABEL(current_player), name_markup);
+  g_free(name_markup);
 
   /* repopulate the scores */
   num_players = model_get_number_of_players();
@@ -62,6 +81,34 @@ static void update_score_display() {
   }
 }
 
+static void end_round(GtkWidget *button, gpointer data)
+{
+  gint score;
+
+  if (button == score5) {
+    score = 5;
+  } else if (button == score3) {
+    score = 3;
+  } else if (button == score1) {
+    score = 1;
+  } else if (button == score0) {
+    score = 0;
+  } else if (button == skip) {
+    score = -1;
+  }
+
+  control_end_round(score,
+		    gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(air5)),
+		    gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(air3)),
+		    gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(air1)),
+		    gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(imiss5)),
+		    gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(imiss3)),
+		    gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(brb5)),
+		    gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(brb3)));
+
+  update_score_display();
+}
+
 static void add_player(GtkWidget *button, gpointer data)
 {
   const gchar *name;
@@ -72,11 +119,11 @@ static void add_player(GtkWidget *button, gpointer data)
   /* pass this name on to the controller */
   control_add_player(name);
 
-  /* update the list */
-  update_score_display();
-
   /* clear out the adder entry */
   gtk_entry_set_text(GTK_ENTRY(adder_entry), "");
+
+  /* update the list */
+  update_score_display();
 }
 
 static void get_name_container(GtkWidget **name_container)
@@ -134,18 +181,14 @@ static void get_name_container(GtkWidget **name_container)
 
 static void get_control_container(GtkWidget **control_container) {
   GtkWidget *score_box, *airball_box, *brb_box, *imiss_box, *attr_box;
-  GtkWidget *score5, *score3, *score1, *score0;
-  GtkWidget *air5, *air3, *air1, *brb5, *brb3, *imiss5, *imiss3;
-  GtkWidget *current_player, *score_label, *airball_label, *brb_label, *imiss_label;
+  GtkWidget *score_label, *airball_label, *brb_label, *imiss_label;
   GtkWidget *airball_align, *brb_align, *imiss_align;
   GtkWidget *air_button_box, *brb_button_box, *imiss_button_box;
-  GtkWidget *skip, *skip_separator, *skip_box;
+  GtkWidget *skip_separator, *skip_box;
   gchar *label_text;
 
   /* set up current player name label */
   current_player = gtk_label_new(NULL);
-  gtk_label_set_markup(GTK_LABEL(current_player),
-		       "<span size=\"large\" weight=\"bold\">Mark</span>");
   gtk_misc_set_alignment(GTK_MISC(current_player), 0, 1.0);
   gtk_widget_set_size_request(current_player, -1, 30);
 
@@ -238,6 +281,13 @@ static void get_control_container(GtkWidget **control_container) {
   gtk_box_pack_start(GTK_BOX(attr_box), airball_box, TRUE, TRUE, 0);
   gtk_box_pack_start(GTK_BOX(attr_box), brb_box, TRUE, TRUE, 0);
   gtk_box_pack_start(GTK_BOX(attr_box), imiss_box, TRUE, TRUE, 0);
+
+  /* add signal handlers for the scoring buttons */
+  g_signal_connect(score5, "clicked", G_CALLBACK(end_round), NULL);
+  g_signal_connect(score3, "clicked", G_CALLBACK(end_round), NULL);
+  g_signal_connect(score1, "clicked", G_CALLBACK(end_round), NULL);
+  g_signal_connect(score0, "clicked", G_CALLBACK(end_round), NULL);
+  g_signal_connect(skip, "clicked", G_CALLBACK(end_round), NULL);
 
   /* pack everything in to a vbox */
   *control_container = gtk_vbox_new(FALSE, 0);

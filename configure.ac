@@ -11,7 +11,8 @@ AC_PROG_INSTALL
 AC_PROG_INTLTOOL([0.23])
 AC_HEADER_STDC
 
-BRICK_CFLAGS="$CFLAGS -O2 -Wall -Werror -ansi -pedantic"
+#BRICK_CFLAGS="$CFLAGS -O2 -Wall -Werror -ansi -pedantic"
+BRICK_CFLAGS="$CFLAGS -O1 -Wall -Werror -ansi -pedantic"
 
 #Check for GLib
 PKG_CHECK_MODULES(GLIB, glib-2.0)

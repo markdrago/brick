@@ -17,6 +17,7 @@
  */
 
 #include "brick.h"
+#include <glib/gprintf.h>
 
 struct round {
   gint points_scored;
@@ -32,6 +33,7 @@ struct round {
 struct player {
   gchar *name;
   gint score;
+  gint num_turns;
   GArray *rounds;
 };
 
@@ -82,6 +84,28 @@ static struct player *create_player(const gchar *name) {
   new_player->rounds = NULL;
 
   return new_player;
+}
+
+gboolean model_set_score(const guint player_num, gint newscore)
+{
+  struct player *p;
+
+  p = &g_array_index(maingame->players, struct player, player_num);
+  p->score = newscore;
+
+  return TRUE;
+}
+
+gboolean model_append_round(guint player_num, gint score, gboolean air_5,
+			    gboolean air_3, gboolean air_1, gboolean imiss_5,
+			    gboolean imiss_3, gboolean brb_5, gboolean brb_3)
+{
+  struct player *p;
+
+  /*  p = &g_array_index(maingame->players, struct player, player_num);
+      p->score += score; */
+
+  return TRUE;
 }
 
 gboolean model_add_player(const gchar *name) {

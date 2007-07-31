@@ -17,11 +17,14 @@
  */
 
 #include "brick.h"
+#include "control.h"
+#include "model.h"
 #include "ui.h"
 
 int main(int argc, char *argv[])
 {
   model_init();
+  control_init();
   ui_init(argc, argv);
   ui_main_loop();
 
