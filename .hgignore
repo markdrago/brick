@@ -26,3 +26,4 @@ Makefile.in$
 ^po/stamp-it$
 ^po/template.po$
 ^stamp-h1$
+^model.s$

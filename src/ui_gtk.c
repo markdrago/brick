@@ -1,5 +1,5 @@
 /*
- * Brick - A 'Twenty-One' Score Tracker
+ * Brick - A '531' Score Tracker
  * Copyright (C) 2007 Mark Drago
  * 
  * This program is free software: you can redistribute it and/or modify

@@ -1,5 +1,5 @@
 /*
- * Brick - A 'Twenty-One' Score Tracker
+ * Brick - A '531' Score Tracker
  * Copyright (C) 2007 Mark Drago
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -17,7 +17,7 @@
  */
 
 #include "brick.h"
-#include <glib/gprintf.h>
+#include <sqlite3.h>
 
 struct round {
   gint points_scored;
@@ -134,6 +134,9 @@ gboolean model_get_player_score(gint *score, const guint player_num) {
   *score = p.score;
   return TRUE;
 }
+
+gboolean model_store() {
+  
 
 gboolean model_init() {
   maingame = g_new(struct game, 1);
